@@ -15,14 +15,14 @@ interface Props {
 
 const Cell: React.FC<Props> = ({ type = CellType.Input, value, isSelected = false, row, col, onChange, onSelect }) => {
   const [isEditing, setIsEditing] = useState(false)
+  const inputRef = useRef(null)
+
   const onChangeHandler: React.ChangeEventHandler<HTMLInputElement> = useCallback(
     (ev) => {
       onChange(parse(ev.target.value).toString());
     },
     [onChange],
   );
-
-  const inputRef = useRef(null)
 
   const handleDoubleClick = () => {
     emitUnselectAllEvent()
@@ -35,7 +35,7 @@ const Cell: React.FC<Props> = ({ type = CellType.Input, value, isSelected = fals
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => { 
-    if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40){
+    if(e.keyCode === 37 || e.keyCode === 38 || e.keyCode === 39 || e.keyCode === 40) {
       return;
     }
     setIsEditing(true)
@@ -71,27 +71,49 @@ const Cell: React.FC<Props> = ({ type = CellType.Input, value, isSelected = fals
     };
   }, [])
 
+  const formattedValue = /^\d+$/.test(value) ? format(Number(value)) : value
+  const focusStyle = {
+    outLine: 'none',
+    borderColor: isSelected ? '#ff0078' : 'rgba(0, 0, 0, 0.24)'
+  }
+  const borderColor = isEditing ? 'black' : isSelected ? '#ff0078' : 'rgba(0, 0, 0, 0.24)'
+
   return (
     <Box flex={1}>
       {type === CellType.Input
-        ? isEditing ? <Input onKeyDown={handleEditKeyDown}  value={/^\d+$/.test(value) ? format(Number(value)) : value} borderRadius="0" border="2px" borderColor="black"  height="full" p="0" width="full" onChange={onChangeHandler} />
-          : <Input 
+        ? isEditing ? (
+            <Input
+              onKeyDown={handleEditKeyDown}
+              onChange={onChangeHandler}
+              borderRadius="0"
+              border="2px"
+              borderColor={borderColor}
+              height="full"
+              width="full"
+              p="0"
+              value={formattedValue}
+            />
+          ) : (
+            <Input
               ref={inputRef}
               isReadOnly={true}
-              value={/^\d+$/.test(value) ? format(Number(value)) : value}      
               onDoubleClick={handleDoubleClick}
-              onClick={handleClick} 
+              onClick={handleClick}
               onKeyDown={handleKeyDown}
               cursor="pointer"
-              border="1px solid" 
-              borderColor={isSelected? "#ff0078": "rgba(0, 0, 0, 0.24)"}
+              border="1px solid"
+              borderColor={borderColor}
               p="0"
               borderRadius="0"
-              height="full" 
+              height="full"
               width="full"
-              _focus={{outLine: "none", borderColor: isSelected? "#ff0078": "rgba(0, 0, 0, 0.24)"}}
-              />
-        : <Text textAlign="center">{value}</Text>
+              _focus={focusStyle}
+              value={formattedValue}
+            />
+          )
+        : (
+          <Text textAlign="center">{value}</Text>
+        )
       }
     </Box>
   );

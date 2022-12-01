@@ -9,7 +9,6 @@ const NUM_ROWS = 10;
 const NUM_COLUMNS = 10;
 
 const Spreadsheet: React.FC = () => {
-
   const [cellState, setCellState] = useState(
     _.times(NUM_ROWS, () => _.times(NUM_COLUMNS, _.constant(''))),
   );
@@ -23,7 +22,6 @@ const Spreadsheet: React.FC = () => {
   }
 
   const handleKeyDown = (evt: React.KeyboardEvent<HTMLElement>) => {
-
     switch (evt.keyCode) {
       case 37:
         setActiveCol(Math.max(activeCol - 1, 0))
@@ -42,7 +40,6 @@ const Spreadsheet: React.FC = () => {
     }
   }
 
-
   return (
     <Box width="full" onKeyDown={handleKeyDown} tabIndex={0}>
       {cellState.map((row, rowIdx) => {
@@ -51,7 +48,11 @@ const Spreadsheet: React.FC = () => {
             {rowIdx === 0 && (
               <Flex>
                 {_.range(NUM_COLUMNS + 1).map(labelIndex => (
-                  <Cell key={labelIndex} type={CellType.Text} value={labelIndex > 0 ? `${ String.fromCharCode("A".charCodeAt(0)+labelIndex-1)}` : ''}/>
+                  <Cell
+                    key={labelIndex}
+                    type={CellType.Text}
+                    value={labelIndex > 0 ? `${String.fromCharCode('A'.charCodeAt(0) + labelIndex - 1)}` : ''}
+                  />
                 ))}
               </Flex>
             )}
